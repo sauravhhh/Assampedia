@@ -1,0 +1,25 @@
+{
+  "key": "assamese",
+  "title": "Assamese language",
+  "sub": "From Assampedia, the free Assam encyclopedia",
+  "info": [
+    [
+      "Native to",
+      "Assam"
+    ],
+    [
+      "Script",
+      "Assamese script"
+    ],
+    [
+      "Speakers",
+      "About 15 million"
+    ],
+    [
+      "Status",
+      "Official language of Assam"
+    ]
+  ],
+  "body": "<p><b>Assamese</b> is an Indo-Aryan language spoken mainly in Assam, and the state's official language. It is written in the Assamese script, which is closely related to the Bengali script but has its own letters, including ৰ and ৱ.</p><p>Its literature goes back centuries, from the Vaishnavite writings of Srimanta Sankardev and Madhavdev to modern poetry, novels and songs. Assamese is also spoken in parts of Arunachal Pradesh, Nagaland and Bhutan.</p>",
+  "extra": "<h2>Script and sounds</h2><p>The Assamese script is an abugida: consonants carry an inherent vowel, changed by vowel signs. It is distinct from Bengali script in letters such as ৰ (ro) and ৱ (wo), and in its pronunciation.</p><h2>Literature</h2><p>Early Assamese literature includes the works of Sankardev and Madhavdev, the <i>buranjis</i>, and later the novels of Lakshminath Bezbarua and the songs of Jyoti Prasad Agarwala and Bhupen Hazarika.</p>"
+}
