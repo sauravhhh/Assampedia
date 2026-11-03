@@ -311,7 +311,7 @@ function filterList(){
   const q=document.getElementById('q').value.trim().toLowerCase();
   const nav=document.getElementById('nav');
   const box=document.getElementById('searchresults');
-  const list=q?order.filter(k=>articles[k].title.toLowerCase().includes(q)):order.slice(0,10);
+  const list=q?order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k)&&articles[k].title.toLowerCase().includes(q)):order.slice(0,10);
   nav.innerHTML=list.map(k=>`<a data-k="${k}" onclick="render('${k}')">${articles[k].title}</a>`).join('') || '<p style="font-size:14px">No article found.</p>';
   if(!q){ nav.innerHTML+='<p style="font-size:12px;color:#54595f">Use search to find all 158 articles.</p>'; box.style.display='none'; box.innerHTML=''; }
   else {
@@ -349,7 +349,7 @@ function searchPage(){
   window._currentView='search:'+q;
   if(location.hash.slice(1)!=='search:'+encodeURIComponent(q)) location.hash='search:'+encodeURIComponent(q);
   if(!q){ filterList(); return; }
-  const list=order.filter(k=>articles[k].title.toLowerCase().includes(q.toLowerCase()));
+  const list=order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k)&&articles[k].title.toLowerCase().includes(q.toLowerCase()));
   document.getElementById('searchresults').style.display='none';
   document.getElementById('article').innerHTML=`<h1>Search results</h1><div class="sub">From Assampedia, the free Assam encyclopedia</div><p>${list.length} result${list.length===1?'':'s'} for "${q}".</p>${list.length?`<ul>${list.map(k=>`<li><a href="#" onclick="render('${k}');return false">${articles[k].title}</a></li>`).join('')}</ul>`:'<p>No article found. Try another word, for example "tea", "Kaziranga" or "Majuli".</p>'}`;
   document.getElementById('tab-article').className=''; document.getElementById('tab-talk').className='';
@@ -370,7 +370,7 @@ function overlayFilter(){
   const q=document.getElementById('q2').value.trim().toLowerCase();
   const box=document.getElementById('overlayresults');
   if(!q){ box.innerHTML='<p style="color:#54595f">Type to search all articles, for example "tea", "Kaziranga" or "Majuli".</p>'; return; }
-  const list=order.filter(k=>articles[k].title.toLowerCase().includes(q));
+  const list=order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k)&&articles[k].title.toLowerCase().includes(q));
   box.innerHTML=list.length?list.map(k=>`<a href="#" onclick="document.getElementById('q').value='';closeSearch();render('${k}');return false">${articles[k].title}</a>`).join(''):'<p>No article found.</p>';
 }
 function randomArticle(){ render(order[Math.floor(Math.random()*order.length)]); }
