@@ -1,0 +1,20 @@
+{
+  "key": "assammap",
+  "title": "Map of Assam",
+  "sub": "From Assampedia, the free Assam encyclopedia",
+  "info": [
+    [
+      "Type",
+      "Interactive map article"
+    ],
+    [
+      "Region",
+      "Assam, North-East India"
+    ],
+    [
+      "Base map",
+      "OpenStreetMap contributors"
+    ]
+  ],
+  "body": "<p>This is Assampedia's <b>map-based article</b>: an interactive map of Assam. Tap a marker to see the place, then tap its name to open its full article.</p><div id=\"assam-map\"></div><h2>Places on the map</h2><p>Guwahati · Kaziranga · Majuli · Jorhat · Dibrugarh · Tezpur · Silchar · Sivasagar · Manas · Dhubri — tap a marker on the map above, or open any of these articles from search.</p><h2>Geography</h2><p>Assam stretches from the eastern Himalayan foothills in the north to the Barak Valley in the south, with the Brahmaputra river running east to west through its centre. The map shows the main cities, parks and the river island of Majuli along that route.</p>"
+}
