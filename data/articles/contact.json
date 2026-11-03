@@ -1,0 +1,16 @@
+{
+  "key": "contact",
+  "title": "Contact",
+  "sub": "From Assampedia, the free Assam encyclopedia",
+  "info": [
+    [
+      "Purpose",
+      "Corrections and suggestions"
+    ],
+    [
+      "How",
+      "Use an article's Talk tab"
+    ]
+  ],
+  "body": "<p>Assampedia is a small personal project with no contact form and no support desk.</p><h2>Suggest a correction</h2><p>The best way to suggest a correction is to open the article and use its <b>Talk</b> tab, where readers can note errors, missing sections or new sources to add.</p><h2>What to include</h2><p>When suggesting a change, mention the article name, the section, what is wrong, and — if you have one — the source that supports the correction.</p>"
+}
