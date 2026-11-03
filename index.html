@@ -189,17 +189,38 @@ function relSubtitle(k){
   if(dot>0) txt=txt.slice(0,dot+1);
   return txt.length>100?txt.slice(0,100)+'…':txt;
 }
+function relatedKeys(key){
+  const noBox=['about','privacy','disclaimers','contact'];
+  const stop=new Set(['of','and','in','the','for','at','on','by','a','an']);
+  const words=s=>s.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w && !stop.has(w));
+  const titleWords={}; Object.keys(articles).forEach(k=>{titleWords[k]=new Set(words(articles[k].title));});
+  const myWords=titleWords[key];
+  const pairOk=r=>!['State','Country'].includes(r[0]) && !['Assam','India'].includes(r[1]);
+  const myPairs=new Set(articles[key].info.filter(pairOk).map(r=>(r[0]+'='+r[1]).toLowerCase()));
+  const myLists=Object.keys(catLists).filter(s=>catLists[s].includes(key));
+  const scored=[];
+  order.forEach((k,idx)=>{
+    if(k===key||noBox.includes(k)||k==='assammap') return;
+    let s=0;
+    myLists.forEach(lst=>{ if(catLists[lst].includes(k)) s+=4; });
+    titleWords[k].forEach(w=>{ if(myWords.has(w)) s+=2; });
+    articles[k].info.forEach(r=>{ if(pairOk(r) && myPairs.has((r[0]+'='+r[1]).toLowerCase())) s+=2; });
+    scored.push({k:k,s:s,i:idx});
+  });
+  scored.sort((a,b)=>b.s-a.s||a.i-b.i);
+  return scored.map(x=>x.k);
+}
 function render(key){
   const a=articles[key];
   document.querySelectorAll('#nav a').forEach(x=>x.classList.toggle('on',x.dataset.k===key));
   let info=a.info.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
   const noBox=['about','privacy','disclaimers','contact'];
-  const catLinks=[...new Set(['Assam',articleCat(key),'North-East India'])].map(c=>`<a href="#" onclick="renderCategory('${c}');return false">${c}</a> <a class="ctrl" href="#" onclick="alert('Editing is not enabled on this Assampedia demo.');return false">(−)</a> <a class="ctrl" href="#" onclick="alert('Editing is not enabled on this Assampedia demo.');return false">(+)</a>`).join(' | ');
-  const seeAlsoKeys=[...order.filter(k=>k!==key && !noBox.includes(k) && articleCat(k)===articleCat(key)), ...order.filter(k=>k!==key && !noBox.includes(k) && articleCat(k)!==articleCat(key))].slice(0,8);
+  const catLinks=[...new Set(['Assam',articleCat(key),'North-East India'])].map(c=>`<a href="#" onclick="renderCategory('${c}');return false">${c}</a>`).join(' | ');
+  const seeAlsoKeys=relatedKeys(key);
   const imgRow=(typeof articleImages!=='undefined'&&articleImages[key])?`<tr><td colspan="2" style="padding:0;width:100%"><img src="${articleImages[key].src}" alt="${articleImages[key].alt}" loading="lazy"><div class="cap">${articleImages[key].cap}</div></td></tr>`:'';
   const infoTable=noBox.includes(key)?'':`<table class="infobox"><tr><th colspan="2">${a.title}</th></tr>${imgRow}${info}</table>`;
   const bodyHtml=(a.body.includes('<h2>')||a.body.includes('<p>'))?a.body:wiki(a.body);
-  document.getElementById('article').innerHTML=`<h1>${a.title}</h1><div class="sub">${a.sub}</div><button class="printbtn" onclick="window.print()">Print</button>${infoTable}<div id="tocbox"></div>${bodyHtml}${(typeof extraData!=='undefined'?extraData[key]:'')||''}<h2>References</h2><p class="refs">General reference notes for Assampedia readers: district and park facts follow standard public sources; for official figures, see the Government of Assam and the Archaeological Survey of India.</p><div class="catbox">Categories <a class="ctrl" href="#" onclick="alert('Editing is not enabled on this Assampedia demo.');return false">(+⁺)</a>: ${catLinks}</div><button class="lastupd" onclick="alert('No page history is kept on this Assampedia demo.');return false"><span class="lu-left"><svg viewBox="0 0 24 24" fill="none" stroke="#54595f" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Last updated ${SITE_UPDATED}</span><span class="lu-chev">›</span></button><h2 class="relhead">Related articles</h2><div class="relcards">${seeAlsoKeys.slice(0,4).map(k=>{const im=(typeof articleImages!=='undefined'&&articleImages[k])?`<img src="${articleImages[k].src}" alt="">`:`<div class="relthumb"><svg viewBox="0 0 24 24" fill="none" stroke="#72777d" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="9" r="2"/><path d="M21 17l-5-5-4 4-3-3-4 4"/></svg></div>`;return `<a class="relcard" href="#" onclick="render('${k}');return false">${im}<div><b>${articles[k].title}</b><span>${relSubtitle(k)}</span></div></a>`;}).join('')}</div>`;
+  document.getElementById('article').innerHTML=`<h1>${a.title}</h1><div class="sub">${a.sub}</div><button class="printbtn" onclick="window.print()">Print</button>${infoTable}<div id="tocbox"></div>${bodyHtml}${(typeof extraData!=='undefined'?extraData[key]:'')||''}<h2>References</h2><p class="refs">General reference notes for Assampedia readers: district and park facts follow standard public sources; for official figures, see the Government of Assam and the Archaeological Survey of India.</p><div class="catbox">Categories: ${catLinks}</div><button class="lastupd" onclick="alert('No page history is kept on this Assampedia demo.');return false"><span class="lu-left"><svg viewBox="0 0 24 24" fill="none" stroke="#54595f" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Last updated ${SITE_UPDATED}</span><span class="lu-chev">›</span></button><h2 class="relhead">Related articles</h2><div class="relcards">${seeAlsoKeys.slice(0,4).map(k=>{const im=(typeof articleImages!=='undefined'&&articleImages[k])?`<img src="${articleImages[k].src}" alt="">`:`<div class="relthumb"><svg viewBox="0 0 24 24" fill="none" stroke="#72777d" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="9" r="2"/><path d="M21 17l-5-5-4 4-3-3-4 4"/></svg></div>`;return `<a class="relcard" href="#" onclick="render('${k}');return false">${im}<div><b>${articles[k].title}</b><span>${relSubtitle(k)}</span></div></a>`;}).join('')}</div>`;
   let toc=document.getElementById('tocbox'); let hs=document.querySelectorAll('#article h2');
   let items=[...hs].filter(h=>h.textContent!=='See also'&&h.textContent!=='References'&&h.textContent!=='Related articles').map((h,i)=>{h.id='sec'+i;return `<li><a href="#sec${i}">${h.textContent}</a></li>`}).join('');
   toc.innerHTML=`<div class="toc"><b>Contents</b><ol>${items}</ol></div>`;
