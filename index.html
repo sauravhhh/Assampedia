@@ -197,7 +197,7 @@ function relatedKeys(key){
   const myWords=titleWords[key];
   const pairOk=r=>!['State','Country'].includes(r[0]) && !['Assam','India'].includes(r[1]);
   const myPairs=new Set(articles[key].info.filter(pairOk).map(r=>(r[0]+'='+r[1]).toLowerCase()));
-  const myLists=Object.keys(catLists).filter(s=>catLists[s].includes(key));
+  const myLists=Object.keys(catLists).filter(s=>Array.isArray(catLists[s]) && catLists[s].includes(key));
   const scored=[];
   order.forEach((k,idx)=>{
     if(k===key||noBox.includes(k)||k==='assammap') return;
