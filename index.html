@@ -17,7 +17,7 @@
 <div class="page">
 <aside class="sidebar" id="sidebar"><button id="sideclose" onclick="closeMenu()">✕</button>
 <div class="wordmark" onclick="renderHome()" style="cursor:pointer"><div class="w">Assam<b>pedia</b></div><div class="tag">The Free Assam<br>Encyclopedia</div></div>
-<div class="sidebox"><h3>Navigation</h3><a onclick="renderHome()">Main page</a><a onclick="randomArticle()">Random article</a><a onclick="render('assammap')">Map of Assam</a><a onclick="render('about')">About Assampedia</a></div>
+<div class="sidebox"><h3>Navigation</h3><a onclick="renderHome()">Main page</a><a onclick="randomArticle()">Random article</a><a onclick="renderRecent()">Recently added</a><a onclick="render('assammap')">Map of Assam</a><a onclick="render('about')">About Assampedia</a></div>
 <div class="sidebox"><h3>Articles</h3><div id="nav"></div></div>
 <div class="sidebox"><h3>Categories</h3><a onclick="renderCategory('Districts')">Districts</a><a onclick="renderCategory('Cities')">Cities</a><a onclick="renderCategory('Nature and wildlife')">Nature and wildlife</a><a onclick="renderCategory('Culture and festivals')">Culture and festivals</a><a onclick="renderCategory('History and people')">History and people</a><a onclick="renderCategory('Assamese cuisine')">Assamese cuisine</a><a onclick="renderCategory('Assam')">All articles</a></div>
 <div class="sidebox"><h3>Tools</h3><a onclick="window.print()">Printable version</a><a onclick="whatLinksHere()">What links here</a></div>
@@ -286,6 +286,16 @@ function articleCat(k){
   for(const c of ["Districts","Cities","Nature and wildlife","Culture and festivals","History and people","Assamese cuisine","Transport","Politics","Guwahati localities","Ethnic groups","Languages"]) if(catLists[c].includes(k)) return c;
   return "Assam";
 }
+function renderRecent(){
+  try{ localStorage.setItem('assampedia-view', JSON.stringify({type:'recent'})); }catch(e){}
+  const _prevView3=window._currentView; window._currentView='recent';
+  if(_prevView3 && _prevView3.startsWith('search:')){ history.replaceState(null,'','#recent'); } else if(location.hash.slice(1)!=='recent') location.hash='recent';
+  const meta=["about","privacy","disclaimers","contact"];
+  const list=order.filter(k=>!meta.includes(k)).slice(-20).reverse();
+  document.getElementById('article').innerHTML=`<h1>Recently added</h1><div class="sub">From Assampedia, the free Assam encyclopedia</div><p>The ${list.length} most recently added articles, newest first.</p><ul>${list.map(k=>`<li><a href="#" onclick="render('${k}');return false">${articles[k].title}</a></li>`).join('')}</ul>`;
+  document.getElementById('tab-article').className=''; document.getElementById('tab-talk').className='';
+  closeMenu(); window.scrollTo({top:0,behavior:'smooth'});
+}
 function renderCategory(cat){
   try{ localStorage.setItem('assampedia-view', JSON.stringify({type:'category',cat:cat})); }catch(e){}
   const _prevView2=window._currentView; window._currentView='category:'+cat;
@@ -401,6 +411,7 @@ function restoreView(){
   if(h==='home'){ renderHome(); return; }
   if(h.startsWith('category-')){ renderCategory(decodeURIComponent(h.slice(9))); return; }
   if(h.startsWith('search:')){ document.getElementById('q').value=decodeURIComponent(h.slice(7)); searchPage(); return; }
+  if(h==='recent'){ renderRecent(); return; }
   if(h && articles[h]){ render(h); return; }
   try{
     const v=JSON.parse(localStorage.getItem('assampedia-view')||'null');
@@ -408,6 +419,7 @@ function restoreView(){
     if(v && v.type==='home'){ renderHome(); return; }
     if(v && v.type==='category'){ renderCategory(v.cat); return; }
     if(v && v.type==='search'){ document.getElementById('q').value=v.q||''; searchPage(); return; }
+    if(v && v.type==='recent'){ renderRecent(); return; }
   }catch(e){}
   renderHome();
 }
@@ -417,6 +429,7 @@ window.addEventListener('hashchange', ()=>{
   if(h==='home'){ if(window._currentView!=='home') renderHome(); return; }
   if(h.startsWith('category-')){ const cat=decodeURIComponent(h.slice(9)); if(window._currentView!=='category:'+cat) renderCategory(cat); return; }
   if(h.startsWith('search:')){ const q=decodeURIComponent(h.slice(7)); if(window._currentView!=='search:'+q){ document.getElementById('q').value=q; searchPage(); } return; }
+  if(h==='recent'){ if(window._currentView!=='recent') renderRecent(); return; }
   if(articles[h] && h!==window._currentKey) render(h);
 });
 restoreView();
