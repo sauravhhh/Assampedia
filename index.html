@@ -469,7 +469,7 @@ function renderHome(){
   try{ localStorage.setItem('assampedia-view', JSON.stringify({type:'home'})); }catch(e){}
   if(_prevView3 && _prevView3.startsWith('search:')){ history.replaceState(null,'','#home'); } else if(location.hash.slice(1)!=='home') location.hash='home';
   const cats=['Districts','Cities','Nature and wildlife','Culture and festivals','History and people','Assamese cuisine','Transport','Politics','Parliamentary constituency','Tourist destinations','Assembly constituency','Guwahati localities','Ethnic groups','Languages'];
-  const catLinks=cats.slice().sort().map(c=>`<a href="#" onclick="renderCategory('${c}');return false">${c} (${catLists[c].length})</a>`).join(' · ');
+  const catLinks=cats.map(c=>`<a href="#" onclick="renderCategory('${c}');return false">${c} (${catLists[c].length})</a>`).join(' · ');
   const feat=['assam','kaziranga','bihu','kamakhya'].map(k=>`<p><a href="#" onclick="render('${k}');return false">${articles[k].title}</a> — ${articles[k].sub}</p>`).join('');
   document.getElementById('article').innerHTML=`<h1>Welcome to Assampedia</h1><div class="sub">The free Assam encyclopedia — unofficial, and not affiliated with Wikipedia or Wikimedia.</div><p>Assampedia covers Assam's districts, cities, rivers, wildlife, culture, festivals, food, history and people — ${order.filter(k=>!['about','privacy','disclaimers','contact'].includes(k)).length} articles, plus a map.</p><h2>Kapili AI</h2><p>Kapili AI answers questions from Assampedia articles &mdash; ask about Assam&rsquo;s kings, people, places and events.</p><div class="askbox"><input id="askq" placeholder="Ask Kapili AI, e.g. Who is the first king of Assam?" onkeydown="if(event.key==='Enter')askAssampedia()"><button onclick="askAssampedia()">Ask</button></div><div id="askanswer"></div><p style="font-size:13px"><a href="#" onclick="goKapili();return false">Open the Kapili AI page &rarr;</a></p><p style="font-size:13px;color:#54595f">Try: <a href="#" onclick="askExample('Who is the first king of Assam?');return false">Who is the first king of Assam?</a> · <a href="#" onclick="askExample('Who is the current Chief Minister of Assam?');return false">Who is the current Chief Minister of Assam?</a> · <a href="#" onclick="askExample('What is the capital of Assam?');return false">What is the capital of Assam?</a> · <a href="#" onclick="askExample('When was the Battle of Saraighat?');return false">When was the Battle of Saraighat?</a></p><h2>Featured articles</h2>${feat}<h2>Browse by category</h2><p>${catLinks}</p><h2>Explore</h2><p><a href="#" onclick="render('assammap');return false">Map of Assam</a> · <a href="#" onclick="randomArticle();return false">Random article</a> · <a href="#" onclick="render('about');return false">About Assampedia</a></p>`;
   window._lastArticle=document.getElementById('article').innerHTML;
@@ -600,7 +600,7 @@ function render(key){
   document.querySelectorAll('#nav a').forEach(x=>x.classList.toggle('on',x.dataset.k===key));
   let info=a.info.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
   const noBox=['about','privacy','disclaimers','contact'];
-  const catLinks=[...new Set(['Assam',articleCat(key),'North-East India'])].sort().map(c=>`<a href="#" onclick="renderCategory('${c}');return false">${c}</a>`).join(' | ');
+  const catLinks=[...new Set(['Assam',articleCat(key),'North-East India'])].map(c=>`<a href="#" onclick="renderCategory('${c}');return false">${c}</a>`).join(' | ');
   const seeAlsoKeys=relatedKeys(key);
   const imgRow=(typeof articleImages!=='undefined'&&articleImages[key])?`<tr><td colspan="2" style="padding:0;width:100%"><img src="${articleImages[key].src}" alt="${articleImages[key].alt}" loading="lazy"><div class="cap">${articleImages[key].cap}</div></td></tr>`:'';
   const infoTable=noBox.includes(key)?'':`<table class="infobox"><tr><th colspan="2">${a.title}</th></tr>${imgRow}${info}</table>`;
@@ -777,9 +777,9 @@ function renderCategory(cat){
   try{ localStorage.setItem('assampedia-view', JSON.stringify({type:'category',cat:cat})); }catch(e){}
   const _prevView2=window._currentView; window._currentView='category:'+cat;
   if(_prevView2 && _prevView2.startsWith('search:')){ history.replaceState(null,'','#category-'+encodeURIComponent(cat)); } else if(location.hash.slice(1)!=='category-'+encodeURIComponent(cat)) location.hash='category-'+encodeURIComponent(cat);
-  const list=(catLists[cat]||order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k)));
+  const list=(catLists[cat]||order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k))).slice().sort((a,b)=>articles[a].title.localeCompare(articles[b].title));
   const subs=subcats[cat]||[];
-  const subsHtml=subs.length?`<h2>Subcategories</h2><p>This category has ${subs.length} subcategor${subs.length===1?'y':'ies'}:</p><ul>${subs.slice().sort().map(s=>`<li><a href="#" onclick="renderCategory('${s}');return false">Category: ${s}</a> (${(catLists[s]||[]).length} articles)</li>`).join('')}</ul>`:'';
+  const subsHtml=subs.length?`<h2>Subcategories</h2><p>This category has ${subs.length} subcategor${subs.length===1?'y':'ies'}:</p><ul>${subs.map(s=>`<li><a href="#" onclick="renderCategory('${s}');return false">Category: ${s}</a> (${(catLists[s]||[]).length} articles)</li>`).join('')}</ul>`:'';
   document.getElementById('article').innerHTML=`<h1>Category: ${cat}</h1><div class="sub">From Assampedia, the free Assam encyclopedia</div>${subsHtml}<h2>Articles</h2><p>${list.length} article${list.length===1?'':'s'} in this category.</p><ul>${list.map(k=>`<li><a href="#" onclick="render('${k}');return false">${articles[k].title}</a></li>`).join('')}</ul>`;
   document.getElementById('tab-article').className=''; document.getElementById('tab-talk').className='';
   closeMenu(); window.scrollTo({top:0,behavior:'smooth'});
