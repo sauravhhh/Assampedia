@@ -908,7 +908,15 @@ function renderStats(){
   const total=order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k)).length;
   const cats=Object.keys(catLists).filter(c=>Array.isArray(catLists[c])).map(c=>({c:c,n:catLists[c].length})).sort((a,b)=>b.n-a.n);
   const rows=cats.map(x=>`<tr><td><a href="#" onclick="renderCategory('${x.c}');return false">${x.c}</a></td><td>${x.n}</td></tr>`).join('');
-  document.getElementById('article').innerHTML=`<h1>Statistics</h1><div class="sub">From Assampedia, the free Assam encyclopedia</div><p>Assampedia currently has <b>${total} articles</b> in <b>${cats.length} categories</b>.</p><h2>Articles by category</h2><table><tr><th>Category</th><th>Articles</th></tr>${rows}</table><p>Last updated ${SITE_UPDATED}.</p>`;
+  const keys=order.filter(k=>!["about","privacy","disclaimers","contact"].includes(k));
+  const lens=keys.map(k=>{const t=((articles[k].body||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());return {k:k,words:t?t.split(' ').length:0};});
+  const totalWords=lens.reduce((s,x)=>s+x.words,0);
+  const sorted=[...lens].sort((a,b)=>b.words-a.words);
+  const longest=sorted[0], shortest=sorted[sorted.length-1];
+  const avg=Math.round(totalWords/lens.length);
+  const newest=keys[keys.length-1], oldest=keys[0];
+  const hi=`<h2>Highlights</h2><ul><li>Longest article: <a href="#" onclick="render('${longest.k}');return false">${articles[longest.k].title}</a> (${longest.words.toLocaleString('en-IN')} words)</li><li>Shortest article: <a href="#" onclick="render('${shortest.k}');return false">${articles[shortest.k].title}</a> (${shortest.words.toLocaleString('en-IN')} words)</li><li>Average article length: ${avg.toLocaleString('en-IN')} words</li><li>Total words: ${totalWords.toLocaleString('en-IN')}</li><li>Largest category: <a href="#" onclick="renderCategory('${cats[0].c}');return false">${cats[0].c}</a> (${cats[0].n} articles)</li><li>Newest article: <a href="#" onclick="render('${newest}');return false">${articles[newest].title}</a></li><li>Oldest article: <a href="#" onclick="render('${oldest}');return false">${articles[oldest].title}</a></li></ul>`;
+  document.getElementById('article').innerHTML=`<h1>Statistics</h1><div class="sub">From Assampedia, the free Assam encyclopedia</div><p>Assampedia currently has <b>${total} articles</b> in <b>${cats.length} categories</b>.</p>${hi}<h2>Articles by category</h2><table><tr><th>Category</th><th>Articles</th></tr>${rows}</table><p>Last updated ${SITE_UPDATED}.</p>`;
   window._lastArticle=document.getElementById('article').innerHTML; window._lastTitle='Statistics';
   document.getElementById('tab-article').className='';
   closeMenu(); window.scrollTo({top:0,behavior:'smooth'});
